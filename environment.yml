@@ -5,5 +5,8 @@ dependencies:
   - numpy=1.19.2
   - pip=21.0.1
   - python=3.9
+  - tectonic=0.8.0
   - pip:
       - matplotlib==3.4.3
+      - legwork==0.1.6
+      - pzflow==3.0.0

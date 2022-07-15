@@ -1,2 +1,23 @@
-version: 0.3.0
+version: /Users/rluger/src/showyourwork/showyourwork
 
+dag:
+  render: false
+
+# Zenodo-hosted datasets
+datasets:
+  10.5281/zenodo.5534787:
+    contents:
+      luhman16b.pickle: src/data/luhman16b.pickle
+
+# Dependices of each script
+dependencies:
+  src/scripts/luhman16b.py:
+    - src/data/luhman16b.pickle
+  src/scripts/two_moons.py:
+    - src/data/two_moons_flow.pzflow.pkl
+  src/tex/ms.tex:
+    - src/tex/bib.bib
+
+# Instructions on how to execute custom scripts
+scripts:
+  tex: tectonic {script} -o $(dirname {output})
