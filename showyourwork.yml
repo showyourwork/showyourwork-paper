@@ -1,5 +1,7 @@
-version: /Users/rluger/src/showyourwork/showyourwork
+# Version of showyourwork to use
+version: 697c148980b4a5e4d22be90208da809e7ffd3151
 
+# DAG rendering options
 dag:
   render: false
 
