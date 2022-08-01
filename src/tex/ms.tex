@@ -10,6 +10,7 @@
 \usepackage{hyperref}
 \usepackage{enumitem}
 \usepackage{tikz}
+\usepackage[figuresright]{rotating}
 
 % Colors
 \definecolor{fancyblue}{rgb}{0.09,0.35,0.53}
@@ -69,7 +70,9 @@
 
 % Other stuff
 \newcommand\syw{\texttt{showyourwork}\xspace}
-\newcommand\fileurl[1]{https://github.com/showyourwork/showyourwork-paper/blob/\GitHubSHA/#1}
+\newcommand\repourl{https://github.com/showyourwork/showyourwork-paper}
+\newcommand\commiturl{\repourl/tree/\GitHubSHA}
+\newcommand\fileurl[1]{\repourl/blob/\GitHubSHA/#1}
 
 % Begin!
 \begin{document}
@@ -108,8 +111,22 @@ In practice, this is virtually impossible for three reasons:
     %
 \end{enumerate}
 
-\syw was designed to tackle these three issues, making it easy to develop, publish, and distribute truly open and reproducible research papers in astronomy and other scientific disciplines. 
-At its core, it is a command-line tool that builds papers from a set of instructions contained in a \texttt{GitHub} repository and organized into \texttt{TeX} files, figure scripts, pipeline files, and configuration/specifications files.
+\begin{figure}[t!]
+    \begin{centering}
+        \includegraphics[width=\linewidth]{figures/overview.pdf}
+        \caption{
+            Overview of the \syw workflow for a scientific article.
+            All code and instructions to compile the article exist within a GitHub repository (top center), optionally synced with an Overleaf project (top right).
+            Upon every commit, a GitHub Action is triggered to build the article in an isolated environment.
+            Scripts are executed to generate figures and other workflow output (bottom center), optionally downloading version-controlled datasets from Zenodo (top left), and optionally caching intermediate results on Zenodo Sandbox (bottom left).
+            Finally, the compiled article PDF, alongside an arXiv-compatible tarball, are generated and pushed to a special branch on the GitHub repository.
+        }
+        \label{fig:overview}
+    \end{centering}
+\end{figure}
+
+\syw was designed to tackle these three issues, making it easy for authors to develop, publish, and distribute truly open and reproducible research papers in astronomy and other scientific disciplines. 
+At its core, it is a command-line tool that builds papers from a set of instructions contained in a \texttt{GitHub} repository and organized into \texttt{TeX} files, figure scripts, pipeline files, and configuration/specifications files (see Figure~\ref{fig:overview}).
 Every time the user pushes a new commit to \texttt{GitHub}, the article is automatically built on the cloud using \texttt{GitHub Actions} and the resulting PDF is pushed to a separate branch of the repository. 
 The build step---which sets up the conda environment, generates all figures from scratch (with intelligent caching), and compiles the PDF---acts as a unit test for the paper. 
 If it passes, the paper is (by definition) reproducible.
@@ -126,7 +143,7 @@ Such papers (like this one!) include clickable icons next to each of their figur
 \label{sec:usage}
 In this section we provide basic, high-level instructions on how to install and use \syw.
 These instructions are for version \texttt{0.3.0} of the code, the current version at the time of writing (July 2022) and are subject to change in future releases.
-For more details, including custom commands, settings, examples, and troubleshooting tops, please refer to the documentation for the specific version of \syw at \url{https://show-your.work}.
+For more details, including custom commands, settings, examples, and troubleshooting tips, please refer to the documentation for the specific version of \syw at \url{https://show-your.work}.
 
 \subsection{Prerequisites}
 \label{sec:usage:prereq}
@@ -142,7 +159,7 @@ Note that users do \emph{not} need a local installation of a \texttt{TeX} distri
 \begin{lstlisting}[
     style=bash
 ]
-python -m pip install -U showyourwork
+pip install -U showyourwork
 \end{lstlisting}
 \end{minipage}
 
@@ -154,20 +171,22 @@ python -m pip install -U showyourwork
 ]
 git clone https://github.com/showyourwork/showyourwork
 cd showyourwork
-python -m pip install .
+python setup.py install .
 \end{lstlisting}
 \end{minipage}
 
 \subsection{Reproducing an article}
 \label{sec:usage:reproduce}
-Any project based on \syw can be reproduced by cloning its \texttt{GitHub} repository and running \syw. For example, to reproduce this paper, run:\\
+Any project based on \syw can be reproduced by cloning its \texttt{GitHub} repository and running \syw. For example, to reproduce the exact version of this paper that you are currently reading, run:\\
 
 \noindent\begin{minipage}{\linewidth}
 \begin{lstlisting}[
-    style=bash
+    style=bash,
+    escapeinside={|}{|}
 ]
 git clone https://github.com/showyourwork/showyourwork-paper
 cd showyourwork-paper
+git checkout |\GitHubSHA|
 showyourwork
 \end{lstlisting}
 \end{minipage}
@@ -211,6 +230,7 @@ showyourwork
         \includegraphics[width=0.8\linewidth]{figures/tree.pdf}
         \caption{
             The basic repository structure for an open source scientific article built with \syw.
+            The article you are reading was generated from a repository with this exact structure; you can check it out \href{\commiturl}{here}.
             This figure was automatically generated from the \texttt{TikZ} code in \texttt{src/scripts/tree.tex} by specifying a custom command in \texttt{showyourwork.yml}.
         }
         \label{fig:tree}
@@ -233,45 +253,56 @@ In this section, we showcase a few projects based on \syw to illustrate how the 
 The most fundamental feature of \syw is the automatic generation of the figures in a paper, such as Figure~\ref{fig:eccentricity}, which we reproduce from \citet{Wagg2022}.
 This figure was generated from the script \href{\fileurl{src/scripts/eccentricity.py}}{\texttt{src/scripts/eccentricity.py}} and has only a single other dependency: the \texttt{conda} environment file \href{\fileurl{environment.yml}}{\texttt{environment.yml}} (see Figure~\ref{fig:dag}).
 
+To establish dependencies between scripts and figures included in the TeX manuscript, users may provide the custom \texttt{\textbackslash script\{{\color{lsthilite}script}\}} command within the \texttt{figure} environment, where \texttt{\color{lsthilite}script} is the name of the script \syw should execute to generate the figure(s) within the current environment.
+Additional dependencies may be specified explicitly in the \texttt{showyourwork.yml} configuration file or implicitly via custom rules in the \texttt{Snakefile}.
 
+As a seconde example, consider Figure~\ref{fig:luhman16b}, which we reproduce from \citet{Luger2021}. 
+Unlike Figure~\ref{fig:eccentricity}, this figure has an external dependency: a Zenodo-hosted dataset containing the \emph{CRIRES} observations of the spectrum of a brown dwarf.
+Users simply specify the DOI of the dataset and the files they wish to make dependencies of a given figure in \texttt{showyourwork.yml}, and \syw will download the data as needed.
 
-\begin{figure}[htp]
+Finally, Figure~\ref{fig:two_moons} is an example of a figure depending on an intermediate result that is cached on Zenodo Sandbox.
+
+\clearpage
+
+\begin{figure}[p!]
     \begin{centering}
-        \includegraphics[width=\linewidth]{figures/eccentricity.pdf}
+        \includegraphics[width=0.75\linewidth]{figures/eccentricity.pdf}
         \caption{
             The effect of binary eccentricity on the detectability of a \emph{LISA} gravitational wave source; reproduced from Figure 3 in \citet{Wagg2022}. 
             This figure was automatically generated from the script \texttt{src/scripts/eccentricity.py}.
+            The GitHub icon in the margin is a clickable link pointing to the exact version of the script on GitHub used to produce this figure.
         }
         \label{fig:eccentricity}
         \script{eccentricity.py}
     \end{centering}
 \end{figure}
 
-% \begin{figure}[htp]
-%     \begin{centering}
-%         \includegraphics[width=\linewidth]{figures/luhman16b.pdf}
-%         \caption{
-%             16 \emph{CRIRES} spectra of WISE 1049-5319B spanning a full rotation period of the brown dwarf; adapted from Figure 14 in \citet{Luger2021} and based on data from \citet{Crossfield2014}.
-%             This figure was automatically generated from the script \texttt{src/scripts/luhman16b.py} and a dataset downloaded from \texttt{Zenodo}.
-%         }
-%         \label{fig:luhman16b}
-%         \script{luhman16b.py}
-%     \end{centering}
-% \end{figure}
+\begin{figure}[p!]
+    \begin{centering}
+        \includegraphics[width=0.75\linewidth]{figures/luhman16b.pdf}
+        \caption{
+            16 \emph{CRIRES} spectra of WISE 1049-5319B spanning a full rotation period of the brown dwarf; adapted from Figure 14 in \citet{Luger2021} and based on data from \citet{Crossfield2014}.
+            This figure was automatically generated from the script \texttt{src/scripts/luhman16b.py} and a dataset downloaded from \texttt{Zenodo}.
+            In addition to the GitHub icon linking to the script, this figure also has a dataset icon linking to the Zenodo deposit that hosts the data needed to generate it.
+        }
+        \label{fig:luhman16b}
+        \script{luhman16b.py}
+    \end{centering}
+\end{figure}
 
-% \begin{figure}[htp]
-%     \begin{centering}
-%         \includegraphics[width=\linewidth]{figures/two_moons.pdf}
-%         \caption{
-%             A normalizing flow demonstrated on the two moons data set from \texttt{scikit-learn};
-%             reproduced from Figure 1 in \citet{Crenshaw2022}.
-%             This figure was automatically generated from the script \texttt{src/scripts/two\_moons.py}
-%             and an intermediate dataset that was automatically cached on \texttt{Zenodo}.
-%         }
-%         \label{fig:two_moons}
-%         \script{two_moons.py}
-%     \end{centering}
-% \end{figure}
+\begin{figure}[p!]
+    \begin{centering}
+        \includegraphics[width=0.75\linewidth]{figures/two_moons.pdf}
+        \caption{
+            A normalizing flow demonstrated on the two moons data set from \texttt{scikit-learn};
+            reproduced from Figure 1 in \citet{Crenshaw2022}.
+            This figure was automatically generated from the script \texttt{src/scripts/two\_moons.py}
+            and an intermediate dataset that was automatically cached on \texttt{Zenodo}.
+        }
+        \label{fig:two_moons}
+        \script{two_moons.py}
+    \end{centering}
+\end{figure}
 
 % \section{Integration with Zenodo}
 % \label{sec:zenodo}
@@ -280,7 +311,7 @@ This figure was generated from the script \href{\fileurl{src/scripts/eccentricit
 
 % \section{This paper}
 
-\begin{figure}[htp]
+\begin{sidewaysfigure}
     \begin{centering}
         \includegraphics[width=\linewidth]{figures/dag.pdf}
         \caption{
@@ -290,7 +321,7 @@ This figure was generated from the script \href{\fileurl{src/scripts/eccentricit
         }
         \label{fig:dag}
     \end{centering}
-\end{figure}
+\end{sidewaysfigure}
 
 \bibliography{bib}
 
