@@ -1,5 +1,5 @@
 # Version of showyourwork to use
-version: 6cf1dd69da6b2efd7ff7c405c96359db5a0336f0
+version: 0.3.1
 
 # DAG rendering options
 dag:

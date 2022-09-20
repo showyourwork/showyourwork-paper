@@ -5,3 +5,9 @@ rule train_two_moons_flow:
         True
     script:
         "src/scripts/train_two_moons_flow.py"
+
+rule kernels:
+    output:
+        "src/tex/output/kernels.tex"
+    script:
+        "src/scripts/kernels.py"

@@ -10,3 +10,4 @@ dependencies:
       - matplotlib==3.4.3
       - legwork==0.1.6
       - pzflow==3.0.0
+      - sympy==1.10.1
