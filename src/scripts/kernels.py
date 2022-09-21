@@ -6,7 +6,8 @@ alpha, beta, gamma, Gamma, lam, tau = symbols(
     r"\alpha \beta \gamma \Gamma \lambda \tau"
 )
 
-# Define the kernels
+# Define the kernels. Changing anything here will automatically
+# update the corresponding table in the article.
 kernels = {
     "Constant": alpha**2,
     "Squared Exponential": exp(-((tau / lam) ** 2) / 2),
@@ -22,9 +23,8 @@ kernels = {
 }
 
 # Write all of them to the LaTeX table
-kernels = (r"\\" + "\n\t").join(
+kernels = (r"\\" + "\n").join(
     name + " & " + "$" + latex(expr) + "$" for (name, expr) in kernels.items()
 )
 with open(paths.output / "kernels.tex", "w") as f:
     f.write(kernels)
-    f.write(r"\\\hline")
