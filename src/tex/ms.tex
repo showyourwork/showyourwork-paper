@@ -1,27 +1,28 @@
 % Define document class
 \documentclass{aastex631}
 
-% Import showyourwork
+% Imports
 \usepackage{showyourwork}
-
-% Other imports
 \usepackage{etoolbox}
 \usepackage{listings}
 \usepackage{hyperref}
 \usepackage{enumitem}
 \usepackage{tikz}
 \usepackage[figuresright]{rotating}
-
-
+\usepackage{ifthen}
 
 % Placeholders
-\newcommand\VERSION{0.3.1}
+\newcommand\VERSION{\texttt{0.3.1}\xspace}
 \newcommand\MONTHYEAR{September 2022}
+
+% Dev & review
+\newcommand\xxx[1]{{\color{red}#1}}
+\newcommand\needscite{{\color{red}(citation needed)}}
 
 % Colors
 \definecolor{fancyblue}{rgb}{0.09,0.35,0.53}
 \definecolor{codebkg}{rgb}{0.89,0.89,0.89}
-\colorlet{lsthilite}{fancyblue}
+\colorlet{lsthilite}{blue}
 
 % Code snippet styling
 \usepackage[%
@@ -74,15 +75,59 @@
     urlcolor=fancyblue
 }
 
-% Dev & review
-\newcommand\xxx[1]{{\color{red}#1}}
-\newcommand\needscite{{\color{red}(citation needed)}}
+% Declare products, tools, services, etc. with optional
+% hyperlinks that display only the first time we mention them
+\newcommand{\newproduct}[2][]{%
+    \ifthenelse{\equal{#1}{}}{%
+        \expandafter\def\csname #2\endcsname{\texttt{#2}\xspace}%
+    }{%
+        \expandafter\def\csname #2showlink\endcsname{1}%
+        \expandafter\newcommand\csname #2\endcsname{%
+            \ifnum\expandafter\csname #2showlink\endcsname=1
+                \global\expandafter\def\csname #2showlink\endcsname{0}%
+                \href{#1}{\texttt{#2}}\xspace%
+            \else
+                \texttt{#2}\xspace%
+            \fi
+        }%
+    }%
+}
+\newproduct[https://www.github.com]{GitHub}
+\newproduct[https://www.overleaf.com]{Overleaf} 
+\newproduct[https://zenodo.org]{Zenodo} 
+\newproduct[https://sandbox.zenodo.org]{ZenodoSandbox} 
+\newproduct[https://www.anaconda.com/products/distribution]{conda} 
+\newproduct[https://tectonic-typesetting.github.io]{tectonic} 
+\newproduct[https://snakemake.github.io]{snakemake} 
+\newproduct[https://maneage.org]{maneage} 
+\newproduct{git}
+\newproduct{Python}
+\newproduct{pip}
+\newproduct{TikZ}
+\newproduct{astropy}
+\newproduct{exoplanet}
+\newproduct{exofast}
+\newproduct{emcee}
+\newproduct{sympy}
 
-% Other stuff
+% Other stylized product names
 \newcommand\syw{\texttt{showyourwork}\xspace}
-\newcommand\repourl{https://github.com/showyourwork/showyourwork-paper}
-\newcommand\commiturl{\repourl/tree/\GitHubSHA}
-\newcommand\fileurl[1]{\repourl/blob/\GitHubSHA/#1}
+\newcommand\pdf{\texttt{.pdf}\xspace}
+\newcommand\scikitlearn{\texttt{scikit-learn}\xspace}
+\let\oldTeX\TeX\renewcommand\TeX{\oldTeX\xspace}
+
+% Repo links
+\newcommand\repoargurl{https://github.com/showyourwork/showyourwork-paper}
+\newcommand\commiturl{\repoargurl/tree/\GitHubSHA}
+\newcommand\fileurl[1]{\repoargurl/blob/\GitHubSHA/#1}
+\newcommand\repoargfile[1]{\href{\fileurl{#1}}{\texttt{#1}\xspace}}
+
+% Syntax
+\newcommand\userarg{\texttt{\color{lsthilite}user}\xspace}
+\newcommand\repoarg{\texttt{\color{lsthilite}repo}\xspace}
+\newcommand\figenv{\texttt{figure}\xspace}
+\newcommand\scriptcmd{\texttt{\textbackslash script\{{\color{lsthilite}script}\}}\xspace}
+\newcommand\scriptarg{\texttt{\color{lsthilite}script}\xspace}
 
 % Begin!
 \begin{document}
@@ -102,7 +147,7 @@
 %
 \section{Three arguments for reproducibility}
 \label{sec:args}
-\xxx{Short intro here. I can think of three big ones, but there are perhaps many more.}
+\xxx{Short intro here. I can think of three big arguments for reproducibility, but there are likely many more.}
 
 % 1/3
 \subsection{Ensuring the validity of results}
@@ -125,8 +170,8 @@ In practice, this is virtually impossible for three reasons:
     Moreover, many results depend on the execution of lengthy pipelines with intermediate steps, each potentially requiring manual tinkering that is not always documented and may be difficult to replicate exactly.
     %
     \item The majority of astronomical code is not open source and simply cannot be vetted by third parties \needscite. 
-    While there has been a marked increase in the number of open source astronomical tools in recent years (e.g., \texttt{astropy}, \texttt{exoplanet}, \texttt{emcee}, \texttt{exofast}...), most code associated with the generation of the results in individual papers is not open source \needscite; readers are often expected to take it on faith that there are no bugs in that code, or that the code works exactly as described in the text, with no pitfalls or missing details. 
-    Even when the code is made publicly available, e.g., by being published on \texttt{GitHub}, it is often not documented sufficiently to enable one to execute it and reproduce the paper's results out-of-the-box. 
+    While there has been a marked increase in the number of open source astronomical tools in recent years (e.g., \astropy, \exoplanet, \emcee, \exofast...), most code associated with the generation of the results in individual papers is not open source \needscite; readers are often expected to take it on faith that there are no bugs in that code, or that the code works exactly as described in the text, with no pitfalls or missing details. 
+    Even when the code is made publicly available, e.g., by being published on \GitHub, it is often not documented sufficiently to enable one to execute it and reproduce the paper's results out-of-the-box. 
     And even with proper documentation, the code may require external dependencies, custom virtual environments, or access to closed-source datasets that make it difficult or impossible for a third party to replicate it.
     %
 \end{enumerate}
@@ -152,7 +197,7 @@ In practice, this is virtually impossible for three reasons:
 \label{sec:intro:curr}
 \xxx{Discuss code links in \citet{Luger2019,Luger2021a,Luger2021b}, and how they have caught on, e.g., \citet{Paillas2022}.} 
 %
-\xxx{Give a detailed overview of reproducibility in astronomy; \href{https://maneage.org/pdf/slides-intro.pdf}{this page} has some nice resources. Look at reviews by Harlan Krumholz in medicine. Talk about \texttt{\href{https://maneage.org}{maneage}}.}
+\xxx{Give a detailed overview of reproducibility in astronomy; \href{https://maneage.org/pdf/slides-intro.pdf}{this page} has some nice resources. Look at reviews by Harlan Krumholz in medicine. Talk about \maneage.}
 %
 
 \section{This paper: the \showyourwork workflow}
@@ -168,10 +213,10 @@ If it passes, the paper is (by definition) reproducible.
         \includegraphics[width=\linewidth]{figures/overview.pdf}
         \caption{
             Overview of the \syw workflow for a scientific article.
-            All code and instructions to compile the article exist within a \texttt{GitHub} repository (top center), optionally synced with an \texttt{Overleaf} project (top right).
-            Upon every commit, a \texttt{GitHub} Action is triggered to build the article in an isolated environment.
+            All code and instructions to compile the article exist within a \GitHub repository (top center), optionally synced with an \Overleaf project (top right).
+            Upon every commit, a \GitHub Action is triggered to build the article in an isolated environment.
             Scripts are executed to generate figures and other workflow output (bottom center), optionally downloading version-controlled datasets from Zenodo (top left), and optionally caching intermediate results on Zenodo Sandbox (bottom left).
-            Finally, the compiled article \texttt{.pdf} file, alongside an arXiv-compatible tarball, are generated and pushed to a special branch on the \texttt{GitHub} repository.
+            Finally, the compiled article \pdf file, alongside an arXiv-compatible tarball, are generated and pushed to a special branch on the \GitHub repository.
         }
         \label{fig:overview}
     \end{centering}
@@ -181,7 +226,7 @@ The ideas presented here are not new; nor are the ways in which they are impleme
 Instead, the main goal of \syw is to make developing---and using---reproducible scientific articles as easy as possible.
 \syw works out of the box for simple projects, in which each figure in the article can be generated by running a given script. 
 But it also works for more complicated pipelines, such as projects that depend on many intermediate steps or those that require running expensive simulations. 
-The workflow interfaces directly with \texttt{Zenodo}, allowing users to automatically upload the results of simulations so that expensive build steps can be bypassed on the cloud. 
+The workflow interfaces directly with \Zenodo, allowing users to automatically upload the results of simulations so that expensive build steps can be bypassed on the cloud. 
 In fact, most of the features under the hood are there to make the workflow as flexible and customizable as possible.
 
 Papers that use \syw can be reproduced by downloading the associated repository and running the \syw command-line tool. 
@@ -190,18 +235,18 @@ Such papers (like this one!) include clickable icons next to each of their figur
 \section{Using {\protect\syw}}
 \label{sec:usage}
 In this section we provide basic, high-level instructions on how to install and use \syw.
-These instructions are for version \texttt{\VERSION} of the code, the current version at the time of writing (\MONTHYEAR) and are subject to change in future releases.
+These instructions are for version \VERSION of the code, the current version at the time of writing (\MONTHYEAR) and are subject to change in future releases.
 For more details, including custom commands, settings, examples, and troubleshooting tips, please refer to the documentation for the specific version of \syw.
 
 \subsection{Prerequisites}
 \label{sec:usage:prereq}
-\syw requires the \texttt{conda} package manager\footnote{\url{https://www.anaconda.com/products/distribution}} and is currently tested only on Unix-like operating systems (such as Linux, Ubuntu, or MacOS).
-Users must also have access to a \texttt{GitHub}\footnote{\url{https://www.github.com}} account; other \texttt{git} platforms are not currently supported.
-Note that users do \emph{not} need a local installation of a \texttt{TeX} distribution, as \syw uses the \texttt{conda}-managed \texttt{tectonic} package to compile articles.
+\syw requires the \conda package manager and is currently tested only on Unix-like operating systems (such as Linux, Ubuntu, or MacOS).
+Users must also have access to a \GitHub account; other \git platforms are not currently supported.
+Note that users do \emph{not} need a local installation of a \TeX distribution, as \syw uses the \conda-managed \tectonic package to compile articles.
 
 \subsection{Installation}
 \label{sec:usage:install}
-\syw can be installed with the \texttt{Python} package manager \texttt{pip}:\\
+\syw can be installed with the \Python package manager \pip:\\
 
 \noindent\begin{minipage}{\linewidth}
 \begin{lstlisting}[
@@ -211,7 +256,7 @@ pip install -U showyourwork
 \end{lstlisting}
 \end{minipage}
 
-\noindent (recommended) or from source on \texttt{GitHub}:\\
+\noindent (recommended) or from source on \GitHub:\\
 
 \noindent\begin{minipage}{\linewidth}
 \begin{lstlisting}[
@@ -225,7 +270,7 @@ python setup.py install .
 
 \subsection{Reproducing an article}
 \label{sec:usage:reproduce}
-Any project based on \syw can be reproduced by cloning its \texttt{GitHub} repository and running \syw. For example, to reproduce the exact version of this paper that you are currently reading, run:\\
+Any project based on \syw can be reproduced by cloning its \GitHub repository and running \syw. For example, to reproduce the exact version of this paper that you are currently reading, run:\\
 
 \noindent\begin{minipage}{\linewidth}
 \begin{lstlisting}[
@@ -239,7 +284,7 @@ showyourwork
 \end{lstlisting}
 \end{minipage}
 
-\noindent This will set up a custom \texttt{conda} environment for the workflow, download the required datasets from \texttt{Zenodo}, build all of the figures, and generate a \texttt{.pdf} file identical to this one.
+\noindent This will set up a custom \conda environment for the workflow, download the required datasets from \Zenodo, build all of the figures, and generate a \pdf file identical to this one.
 
 \subsection{Creating a new article}
 \label{sec:usage:new}
@@ -256,8 +301,10 @@ showyourwork setup user/repo
 \end{lstlisting}
 \end{minipage}
 
-\noindent where \texttt{\color{lsthilite}user} and \texttt{\color{lsthilite}repo} are the user's \texttt{GitHub} handle and the repository name, respectively. 
-After the user answers a few prompts, \syw will set up a local \texttt{git} repository \texttt{\color{lsthilite}repo} with the correct structure and placeholder files (see \S\ref{sec:usage:struct}).
+
+
+\noindent where \userarg and \repoarg are the user's \GitHub handle and the repository name, respectively. 
+After the user answers a few prompts, \syw will set up a local \git repository \repoarg with the correct structure and placeholder files (see \S\ref{sec:usage:struct}).
 The article may then be built by running\\
 
 \noindent\begin{minipage}{\linewidth}
@@ -279,40 +326,41 @@ showyourwork
         \caption{
             The basic repository structure for an open source scientific article built with \syw.
             The article you are reading was generated from a repository with this exact structure; you can check it out \href{\commiturl}{here}.
-            This figure was automatically generated from the \texttt{TikZ} code in \texttt{src/scripts/tree.tex} by specifying a custom command in \texttt{showyourwork.yml}.
+            This figure was automatically generated from the \TikZ code in \repoargfile{src/scripts/tree.tex} by specifying a custom command in \repoargfile{showyourwork.yml}.
         }
         \label{fig:tree}
         \script{tree.tex}
     \end{centering}
 \end{figure}
 %
-Figure~\ref{fig:tree} shows the basic directory structure for a \syw article repository as of version \texttt{\VERSION}.
-Repositories are comprised of configuration files at the root level and a directory called \texttt{src} containing the manuscript files and all of the the code and workflow scripts needed to render the final article \texttt{.pdf} file.
+Figure~\ref{fig:tree} shows the basic directory structure for a \syw article repository as of version \VERSION{}.
+Repositories are comprised of configuration files at the root level and a directory called \repoargfile{src} containing the manuscript files and all of the the code and workflow scripts needed to render the final article \pdf file.
 %
 \xxx{More details here.}
 
 \section{How it works}
 \label{sec:how-it-works}
-\xxx{Discuss how things are actually implemented. Talk about the dependence on \texttt{Snakemake} \citep{Molder2021} and \texttt{tectonic}\footnote{\url{https://tectonic-typesetting.github.io}}. Discuss the integration with \texttt{Zenodo} for both static datasets and cached datasets. Discuss integration with \texttt{Overleaf}.}
+\xxx{Discuss how things are actually implemented. Talk about the dependence on \snakemake \citep{Molder2021} and \tectonic. Discuss the integration with \Zenodo for both static datasets and cached datasets. Discuss integration with \Overleaf.}
 
 \section{Examples}
 \label{sec:examples}
 In this section, we showcase a few projects based on \syw to illustrate how the workflow can facilitate the development and dissemination of open source scientific articles.
 
 The most fundamental feature of \syw is the automatic generation of the figures in a paper, such as Figure~\ref{fig:eccentricity}, which we reproduce from \citet{Wagg2022}.
-This figure was generated from the script \href{\fileurl{src/scripts/eccentricity.py}}{\texttt{src/scripts/eccentricity.py}} and has only a single other dependency: the \texttt{conda} environment file \href{\fileurl{environment.yml}}{\texttt{environment.yml}} (see Figure~\ref{fig:dag}).
+This figure was generated from the script \repoargfile{src/scripts/eccentricity.py} and has only a single other dependency: the \conda environment file \repoargfile{environment.yml} (see Figure~\ref{fig:dag}).
 
-To establish dependencies between scripts and figures included in the TeX manuscript, users may provide the custom \texttt{\textbackslash script\{{\color{lsthilite}script}\}} command within the \texttt{figure} environment, where \texttt{\color{lsthilite}script} is the name of the script \syw should execute to generate the figure(s) within the current environment.
-Additional dependencies may be specified explicitly in the \texttt{showyourwork.yml} configuration file or implicitly via custom rules in the \texttt{Snakefile}.
+To establish dependencies between scripts and figures included in the TeX manuscript, users may provide the custom \scriptcmd command within the \figenv environment, where \scriptarg is the name of the script \syw should execute to generate the figure(s) within the current environment.
+Additional dependencies may be specified explicitly in the \repoargfile{showyourwork.yml} configuration file or implicitly via custom rules in the \repoargfile{Snakefile}.
 
 As a seconde example, consider Figure~\ref{fig:luhman16b}, which we reproduce from \citet{Luger2021c}. 
 Unlike Figure~\ref{fig:eccentricity}, this figure has an external dependency: a Zenodo-hosted dataset containing the \emph{CRIRES} observations of the spectrum of a brown dwarf.
-Users simply specify the DOI of the dataset and the files they wish to make dependencies of a given figure in \texttt{showyourwork.yml}, and \syw will download the data as needed.
+Users simply specify the DOI of the dataset and the files they wish to make dependencies of a given figure in \repoargfile{showyourwork.yml}, and \syw will download the data as needed.
 
 Figure~\ref{fig:two_moons} is an example of a figure depending on an intermediate result that is cached on Zenodo Sandbox.
 \xxx{More details.}
 
 \xxx{Discuss Table~\ref{tab:variable} and variable output.}
+Variable output can also occur inline. For instance, the following sentence is programmatically generated from the same script: \variable{output/SHO_value.tex} Note the icon in the margin that automatically links to the corresponding \snakemake rule.
 
 \xxx{Discuss Figure~\ref{fig:dag} and this paper as a whole as a meta-example.}
 
@@ -320,7 +368,7 @@ Figure~\ref{fig:two_moons} is an example of a figure depending on an intermediat
 
 \section{Current issues and future work}
 \label{sec:future}
-\xxx{This is a work in progress. Currently focused primarily on short-term reproducibility; discuss the various issues that arise from relying on \texttt{GitHub}, \texttt{conda}, \texttt{pip}, etc. Broken links will be an issue. Conda environments are not impermeable. Currently difficult (impossible?) to run stuff on a cluster. Doesn't play nice with journals. Anything  else?}
+\xxx{This is a work in progress. Currently focused primarily on short-term reproducibility; discuss the various issues that arise from relying on \GitHub, \conda, \pip, etc. Broken links will be an issue. Conda environments are not impermeable. Currently difficult (impossible?) to run stuff on a cluster. Doesn't play nice with journals. Anything  else?}
 
 \section{Conclusion}
 \label{sec:conclusion}
@@ -334,8 +382,8 @@ Figure~\ref{fig:two_moons} is an example of a figure depending on an intermediat
         \includegraphics[width=0.75\linewidth]{figures/eccentricity.pdf}
         \caption{
             The effect of binary eccentricity on the detectability of a \emph{LISA} gravitational wave source; reproduced from Figure 3 in \citet{Wagg2022}. 
-            This figure was automatically generated from the script \texttt{src/scripts/eccentricity.py}.
-            The \texttt{GitHub} icon in the margin is a clickable link pointing to the exact version of the script on \texttt{GitHub} used to produce this figure.
+            This figure was automatically generated from the script \repoargfile{src/scripts/eccentricity.py}.
+            The \GitHub icon in the margin is a clickable link pointing to the exact version of the script on \GitHub used to produce this figure.
         }
         \label{fig:eccentricity}
         \script{eccentricity.py}
@@ -347,8 +395,8 @@ Figure~\ref{fig:two_moons} is an example of a figure depending on an intermediat
         \includegraphics[width=0.75\linewidth]{figures/luhman16b.pdf}
         \caption{
             16 \emph{CRIRES} spectra of WISE 1049-5319B spanning a full rotation period of the brown dwarf; adapted from Figure 14 in \citet{Luger2021c} and based on data from \citet{Crossfield2014}.
-            This figure was automatically generated from the script \texttt{src/scripts/luhman16b.py} and a dataset downloaded from \texttt{Zenodo}.
-            In addition to the \texttt{GitHub} icon linking to the script, this figure also has a dataset icon linking to the Zenodo deposit that hosts the data needed to generate it.
+            This figure was automatically generated from the script \repoargfile{src/scripts/luhman16b.py} and a dataset downloaded from \Zenodo.
+            In addition to the \GitHub icon linking to the script, this figure also has a dataset icon linking to the Zenodo deposit that hosts the data needed to generate it.
         }
         \label{fig:luhman16b}
         \script{luhman16b.py}
@@ -359,10 +407,10 @@ Figure~\ref{fig:two_moons} is an example of a figure depending on an intermediat
     \begin{centering}
         \includegraphics[width=0.75\linewidth]{figures/two_moons.pdf}
         \caption{
-            A normalizing flow demonstrated on the two moons data set from \texttt{scikit-learn};
+            A normalizing flow demonstrated on the two moons data set from \scikitlearn;
             reproduced from Figure 1 in \citet{Crenshaw2022}.
-            This figure was automatically generated from the script \texttt{src/scripts/two\_moons.py}
-            and an intermediate dataset that was automatically cached on \texttt{Zenodo}.
+            This figure was automatically generated from the script \repoargfile{src/scripts/two\_moons.py}
+            and an intermediate dataset that was automatically cached on \Zenodo.
             \xxx{@jfcrenshaw: is it ok for us to reproduce this figure of yours?}
         }
         \label{fig:two_moons}
@@ -380,8 +428,8 @@ Figure~\ref{fig:two_moons} is an example of a figure depending on an intermediat
         \end{tabular}
     \end{center}
     \caption{The functional forms of various commonly used Gaussian process kernels; reproduced from Table~1 in \citet{Aigrain2022}.
-    The contents of this table are programmatically generated; the kernels are defined as \texttt{sympy} expressions and rendered into \texttt{TeX} form in the script \texttt{src/scripts/kernels.py}.
-    The autogenerated \texttt{GitHub} icon in the margin links to the rule in the \texttt{Snakefile} that runs that script.
+    The contents of this table are programmatically generated; the kernels are defined as \sympy expressions and rendered into \TeX form in the script \repoargfile{src/scripts/kernels.py}.
+    The autogenerated \GitHub icon in the margin links to the rule in the \repoargfile{Snakefile} that runs that script.
     \xxx{@dfm: is it ok for us to reproduce this table of yours?}}
     \label{tab:variable}
 \end{table}
@@ -391,8 +439,8 @@ Figure~\ref{fig:two_moons} is an example of a figure depending on an intermediat
         \includegraphics[width=\linewidth]{figures/dag.pdf}
         \caption{
             A directed acyclic graph (DAG) showing the complete list of dependencies for the article. 
-            Scripts are shown in green, \texttt{Zenodo} deposits in blue, datasets in purple, and \texttt{TeX} files in red.
-            This figure is located in the \texttt{src/static} directory and, unlike the other figures in this article, is version controlled by \texttt{git}. The \texttt{src/static} directory is reserved for figures that are not programmatically generated and simply get copied over to the output directory at compile time.
+            Scripts are shown in green, \Zenodo deposits in blue, datasets in purple, and \TeX files in red.
+            This figure is located in the \repoargfile{src/static} directory and, unlike the other figures in this article, is version controlled by \git. The \repoargfile{src/static} directory is reserved for figures that are not programmatically generated and simply get copied over to the output directory at compile time.
             \xxx{TODO: Regenerate me!}
         }
         \label{fig:dag}

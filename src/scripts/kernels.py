@@ -23,8 +23,20 @@ kernels = {
 }
 
 # Write all of them to the LaTeX table
-kernels = (r"\\" + "\n").join(
-    name + " & " + "$" + latex(expr) + "$" for (name, expr) in kernels.items()
-)
 with open(paths.output / "kernels.tex", "w") as f:
-    f.write(kernels)
+    f.write(
+        (r"\\" + "\n").join(
+            name + " & " + "$" + latex(expr) + "$" for (name, expr) in kernels.items()
+        )
+    )
+
+
+with open(paths.output / "SHO_value.tex", "w") as f:
+    value = (
+        kernels["Stochastic Harmonic Oscillator"]
+        .subs({beta: 0.5, lam: 0.5, tau: 0.5})
+        .evalf()
+    )
+    f.write(
+        rf"The value of the Stochastic Harmonic Oscillator kernel for $\beta = \lambda = \tau = 0.5$ is {value:.5f}."
+    )

@@ -8,6 +8,7 @@ rule train_two_moons_flow:
 
 rule kernels:
     output:
-        "src/tex/output/kernels.tex"
+        "src/tex/output/kernels.tex",
+        "src/tex/output/SHO_value.tex"
     script:
         "src/scripts/kernels.py"
