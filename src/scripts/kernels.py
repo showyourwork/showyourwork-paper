@@ -30,13 +30,10 @@ with open(paths.output / "kernels.tex", "w") as f:
         )
     )
 
-
-with open(paths.output / "SHO_value.tex", "w") as f:
-    value = (
-        kernels["Stochastic Harmonic Oscillator"]
-        .subs({beta: 0.5, lam: 0.5, tau: 0.5})
-        .evalf()
-    )
-    f.write(
-        rf"The value of the Stochastic Harmonic Oscillator kernel for $\beta = \lambda = \tau = 0.5$ is {value:.5f}."
-    )
+params = dict(snakemake.params)
+kernel = params.pop("kernel")
+params = {eval(key): value for key, value in params.items()}
+with open(paths.output / "kernel_value.tex", "w") as f:
+    value = kernels[kernel].subs(params).evalf()
+    params = ",\,".join([f"{key} = {value:.2f}" for key, value in params.items()])
+    f.write(rf"The value of the {kernel} kernel for ${params}$ is ${value:.5f}$.")
