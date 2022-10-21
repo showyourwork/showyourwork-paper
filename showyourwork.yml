@@ -1,5 +1,5 @@
-# Version of showyourwork to use
-version: /Users/rluger/src/showyourwork/showyourwork-dev
+# Version of showyourwork
+version: 0.4.0
 
 # DAG rendering options
 dag:
