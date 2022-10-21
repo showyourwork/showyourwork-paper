@@ -12,7 +12,7 @@ rule kernels:
         "src/tex/output/kernel_value.tex"
     params:
         kernel="Stochastic Harmonic Oscillator",
-        beta=0.75,
+        beta=0.5,
         lam=0.5,
         tau=0.25
     script:

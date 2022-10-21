@@ -36,4 +36,4 @@ params = {eval(key): value for key, value in params.items()}
 with open(paths.output / "kernel_value.tex", "w") as f:
     value = kernels[kernel].subs(params).evalf()
     params = ",\,".join([f"{key} = {value:.2f}" for key, value in params.items()])
-    f.write(rf"The value of the {kernel} kernel for ${params}$ is ${value:.5f}$.")
+    f.write(rf"the value of the {kernel} kernel for ${params}$ is ${value:.5f}$.")

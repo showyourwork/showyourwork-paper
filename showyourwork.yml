@@ -1,9 +1,9 @@
 # Version of showyourwork to use
-version: 60e1418a000b73ae26ae7d1466b57a2849e77d57
+version: /Users/rluger/src/showyourwork/showyourwork-dev
 
 # DAG rendering options
 dag:
-  render: false
+  render: true
 
 # Zenodo-hosted datasets
 datasets:

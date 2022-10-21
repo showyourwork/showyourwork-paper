@@ -10,14 +10,29 @@
 \usepackage{tikz}
 \usepackage[figuresright]{rotating}
 \usepackage{ifthen}
+\usepackage{xparse}
+\usepackage{stackengine}
 
 % Placeholders
 \newcommand\VERSION{\texttt{0.3.1}\xspace}
 \newcommand\MONTHYEAR{September 2022}
 
 % Dev & review
-\newcommand\xxx[1]{{\color{red}#1}}
 \newcommand\needscite{{\color{red}(citation needed)}}
+\DeclareDocumentCommand{\todo}{o o o o o o o o m}{%
+    {\color{red}#9}%
+    \marginpar{%
+        \raisebox{-0.5em}{%
+            \setstackgap{S}{0pt}%
+            \Shortstack[c]{
+                \IfValueT{#1}{\includegraphics[width=1.75em]{avatars/#1.png}\IfValueT{#2}{\includegraphics[width=1.75em]{avatars/#2.png}}}
+                \IfValueT{#3}{\includegraphics[width=1.75em]{avatars/#3.png}\IfValueT{#4}{\includegraphics[width=1.75em]{avatars/#4.png}}}
+                \IfValueT{#5}{\includegraphics[width=1.75em]{avatars/#5.png}\IfValueT{#6}{\includegraphics[width=1.75em]{avatars/#6.png}}}
+                \IfValueT{#7}{\includegraphics[width=1.75em]{avatars/#7.png}\IfValueT{#8}{\includegraphics[width=1.75em]{avatars/#8.png}}}
+            }%
+        }
+    }%
+}
 
 % Colors
 \definecolor{fancyblue}{rgb}{0.09,0.35,0.53}
@@ -147,7 +162,7 @@
 %
 \section{Three arguments for reproducibility}
 \label{sec:args}
-\xxx{Short intro here. I can think of three big arguments for reproducibility, but there are likely many more.}
+\todo[rodluger][adrn][dfm][milescranmer][jfcrenshaw][mathren][katiebreivik][tomwagg]{Short intro here. I can think of three big arguments for reproducibility, but there are likely many more.}
 
 % 1/3
 \subsection{Ensuring the validity of results}
@@ -156,9 +171,11 @@ As astronomical research software becomes increasingly more complex, and as rese
 Unfortunately, the current peer review system in astronomy is simply not set up to do this.
 Checking all of the results in a paper would require the painstaking and methodical review of all of the paper's methods---which usually means scrutinizing all of the code used to generate the figures, tables, and other quantities in the paper. 
 %
-\xxx{Any stats on how much time a typical referee spends on reviewing a paper? Would be nice to back all this up with some numbers.}
-%
-\xxx{We could also look for papers with erroneous results that propagated outwards in the literature because some big mistake made it past peer review. Anyone know of any classic examples?}
+\todo[adrn][dfm][milescranmer][mathren]{
+    Any stats on how much time a typical referee spends on reviewing a paper? Would be nice to back all this up with some numbers.
+    We could also look for papers with erroneous results that propagated outwards in the literature because some big mistake made it past peer review. Anyone know of any classic examples?
+}
+
 %
 In practice, this is virtually impossible for three reasons:
 %
@@ -176,28 +193,28 @@ In practice, this is virtually impossible for three reasons:
     %
 \end{enumerate}
 %
-\xxx{A few sentences here on how an easily reproducible article could help with all this.}
+\todo[rodluger]{A few sentences here on how an easily reproducible article could help with all this.}
 
 % 2/3
 \subsection{Reducing duplication of effort}
 \label{sec:args:duplication}
-\xxx{We shouldn't have to ever reinvent the wheel. Astronomy should be collaborative. Time saved on duplicated effort can be invested in moving the field forward rather than always playing catch-up.}
+\todo[rodluger]{We shouldn't have to ever reinvent the wheel. Astronomy should be collaborative. Time saved on duplicated effort can be invested in moving the field forward rather than always playing catch-up.}
 %
-\xxx{Perhaps some stats on CPU usage in the field, and how reproducibility can help?}
+\todo[adrn][dfm]{Perhaps some stats on CPU usage in the field, and how reproducibility can help?}
 %
-\xxx{Can also talk about open data here; e.g., telescope time is super competitive; we should make it easy for others to use our data, both raw and processed.}
+\todo[adrn][dfm]{Can also talk about open data here; e.g., telescope time is super competitive; we should make it easy for others to use our data, both raw and processed.}
 
 % 3/3
 \subsection{Promoting equity and inclusivity}
 \label{sec:args:dei}
-\xxx{Proprietary legacy code is antithetical to DEI. ``Source code available upon request'' is antithetical to DEI. ``My code is on my website'' is antithetical to DEI. It's 2022, FFS. We need to do everything we can to make astronomy open to everyone.}
+\todo[rodluger][adrn]{Proprietary legacy code is antithetical to DEI. ``Source code available upon request'' is antithetical to DEI. ``My code is on my website'' is antithetical to DEI. It's 2022, FFS. We need to do everything we can to make astronomy open to everyone.}
 
 
 \section{Current approaches to reproducibility}
 \label{sec:intro:curr}
-\xxx{Discuss code links in \citet{Luger2019,Luger2021a,Luger2021b}, and how they have caught on, e.g., \citet{Paillas2022}.} 
+\todo[rodluger]{Discuss code links in \citet{Luger2019,Luger2021a,Luger2021b}, and how they have caught on, e.g., \citet{Paillas2022}.} 
 %
-\xxx{Give a detailed overview of reproducibility in astronomy; \href{https://maneage.org/pdf/slides-intro.pdf}{this page} has some nice resources. Look at reviews by Harlan Krumholz in medicine. Talk about \maneage.}
+\todo[rodluger][adrn][dfm]{Give a detailed overview of reproducibility in astronomy; \href{https://maneage.org/pdf/slides-intro.pdf}{this page} has some nice resources. Look at reviews by Harlan Krumholz in medicine. Talk about \maneage.}
 %
 
 \section{This paper: the \showyourwork workflow}
@@ -322,7 +339,7 @@ showyourwork
 %
 \begin{figure}[p!]
     \begin{centering}
-        \includegraphics[width=0.8\linewidth]{figures/tree.pdf}
+        \includegraphics[width=0.5\linewidth]{figures/tree.pdf}
         \caption{
             The basic repository structure for an open source scientific article built with \syw.
             The article you are reading was generated from a repository with this exact structure; you can check it out \href{\commiturl}{here}.
@@ -336,11 +353,11 @@ showyourwork
 Figure~\ref{fig:tree} shows the basic directory structure for a \syw article repository as of version \VERSION{}.
 Repositories are comprised of configuration files at the root level and a directory called \repoargfile{src} containing the manuscript files and all of the the code and workflow scripts needed to render the final article \pdf file.
 %
-\xxx{More details here.}
+\todo[rodluger]{More details here.}
 
 \section{How it works}
 \label{sec:how-it-works}
-\xxx{Discuss how things are actually implemented. Talk about the dependence on \snakemake \citep{Molder2021} and \tectonic. Discuss the integration with \Zenodo for both static datasets and cached datasets. Discuss integration with \Overleaf.}
+\todo[rodluger]{Discuss how things are actually implemented. Talk about the dependence on \snakemake \citep{Molder2021} and \tectonic. Discuss the integration with \Zenodo for both static datasets and cached datasets. Discuss integration with \Overleaf.}
 
 \section{Examples}
 \label{sec:examples}
@@ -357,24 +374,24 @@ Unlike Figure~\ref{fig:eccentricity}, this figure has an external dependency: a 
 Users simply specify the DOI of the dataset and the files they wish to make dependencies of a given figure in \repoargfile{showyourwork.yml}, and \syw will download the data as needed.
 
 Figure~\ref{fig:two_moons} is an example of a figure depending on an intermediate result that is cached on Zenodo Sandbox.
-\xxx{More details.}
+\todo[rodluger]{More details.}
 
-\xxx{Discuss Table~\ref{tab:variable} and variable output.}
+\todo[rodluger]{Discuss Table~\ref{tab:variable} and variable output.}
 Variable output can also occur inline. For instance, the following sentence is programmatically generated from the same script: 
-\variable{output/kernel_value.tex} 
+\variable{output/kernel_value.tex}
 Note the icon in the margin that automatically links to the corresponding \snakemake rule, where users can easily change the values of the kernel parameters.
 
-\xxx{Discuss Figure~\ref{fig:dag} and this paper as a whole as a meta-example.}
+\todo[rodluger]{Discuss Figure~\ref{fig:dag} and this paper as a whole as a meta-example.}
 
-\xxx{Finally, cite a bunch of papers here that already use showyourwork and showcase its various features.}
+\todo[rodluger]{Finally, cite a bunch of papers here that already use showyourwork and showcase its various features.}
 
 \section{Current issues and future work}
 \label{sec:future}
-\xxx{This is a work in progress. Currently focused primarily on short-term reproducibility; discuss the various issues that arise from relying on \GitHub, \conda, \pip, etc. Broken links will be an issue. Conda environments are not impermeable. Currently difficult (impossible?) to run stuff on a cluster. Doesn't play nice with journals. Anything  else?}
+\todo[rodluger][dfm][mathren][milescranmer]{This is a work in progress. Currently focused primarily on short-term reproducibility; discuss the various issues that arise from relying on \GitHub, \conda, \pip, etc. Broken links will be an issue. Conda environments are not impermeable. Currently difficult (impossible?) to run stuff on a cluster. Doesn't play nice with journals. Anything  else?}
 
 \section{Conclusion}
 \label{sec:conclusion}
-\xxx{Stuff here. showyourwork is a community project -- please contribute!}
+\todo[rodluger][dfm][adrn][milescranmer][jfcrenshaw][mathren][katiebreivik][tomwagg]{Stuff here. showyourwork is a community project -- please contribute!}
 
 % DEBUG -- place figures inline with text
 \clearpage
@@ -413,7 +430,6 @@ Note the icon in the margin that automatically links to the corresponding \snake
             reproduced from Figure 1 in \citet{Crenshaw2022}.
             This figure was automatically generated from the script \repoargfile{src/scripts/two\_moons.py}
             and an intermediate dataset that was automatically cached on \Zenodo.
-            \xxx{@jfcrenshaw: is it ok for us to reproduce this figure of yours?}
         }
         \label{fig:two_moons}
         \script{two_moons.py}
@@ -429,10 +445,10 @@ Note the icon in the margin that automatically links to the corresponding \snake
             \variable{output/kernels.tex}
         \end{tabular}
     \end{center}
-    \caption{The functional forms of various commonly used Gaussian process kernels; reproduced from Table~1 in \citet{Aigrain2022}.
-    The contents of this table are programmatically generated; the kernels are defined as \sympy expressions and rendered into \TeX form in the script \repoargfile{src/scripts/kernels.py}.
-    The autogenerated \GitHub icon in the margin links to the rule in the \repoargfile{Snakefile} that runs that script.
-    \xxx{@dfm: is it ok for us to reproduce this table of yours?}}
+        \caption{The functional forms of various commonly used Gaussian process kernels; based on Table~1 in \citet{Aigrain2022}.
+        The contents of this table are programmatically generated; the kernels are defined as \sympy expressions and rendered into \TeX form in the script \repoargfile{src/scripts/kernels.py}.
+        The autogenerated \GitHub icon in the margin links to the rule in the \repoargfile{Snakefile} that runs that script.
+    }
     \label{tab:variable}
 \end{table}
 
@@ -443,7 +459,6 @@ Note the icon in the margin that automatically links to the corresponding \snake
             A directed acyclic graph (DAG) showing the complete list of dependencies for the article. 
             Scripts are shown in green, \Zenodo deposits in blue, datasets in purple, and \TeX files in red.
             This figure is located in the \repoargfile{src/static} directory and, unlike the other figures in this article, is version controlled by \git. The \repoargfile{src/static} directory is reserved for figures that are not programmatically generated and simply get copied over to the output directory at compile time.
-            \xxx{TODO: Regenerate me!}
         }
         \label{fig:dag}
     \end{centering}
