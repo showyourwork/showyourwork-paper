@@ -1,9 +1,12 @@
 # Version of showyourwork
-version: 0.4.0
+version: 0.4.1
 
 # DAG rendering options
 dag:
   render: true
+  ignore_files:
+    - src/tex/orcid-ID.png
+    - src/tex/avatars/*
 
 # Zenodo-hosted datasets
 datasets:
